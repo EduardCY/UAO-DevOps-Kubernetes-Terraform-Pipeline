@@ -1,0 +1,14 @@
+# OWASP ZAP Rules Configuration
+# Customize security scanning rules for the application
+
+# Format: rule_id  IGNORE|WARN|FAIL  URL_pattern
+# Example: 10021  IGNORE  https://example.com/api/
+
+# Ignore cookie warnings for development
+10054	WARN	.*
+
+# CSP Header - Warning only
+10038	WARN	.*
+
+# X-Content-Type-Options - Warning only
+10021	WARN	.*
