@@ -176,13 +176,28 @@ TF_API_TOKEN=XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX.atlasv1.XXXXXXXXXXXXXXXXXXXXXX
 4. URL: Dejar vacío por ahora (se configurará con el endpoint de tu app después)
 5. **Save & Test** (fallará hasta que despliegues la app)
 
-### 5.4 Generar API Key
-1. En el menú izquierdo: **Administration → API Keys**
-2. Click **Add API key**
-3. Key name: `devops-pipeline-key`
-4. Role: **Editor**
-5. **Add**
-6. **Copiar el API key** (solo se muestra una vez)
+### 5.4 Generar API Key (Service Account Token)
+
+**Grafana Cloud usa Service Accounts para autenticación API**
+
+1. En el menú izquierdo: **Administration → Service accounts**
+2. Click **"Add service account"** (botón arriba a la derecha)
+3. Configurar:
+   - **Display name**: `devops-pipeline-sa`
+   - **Role**: **Editor**
+4. Click **"Create"**
+5. Serás redirigido a la página del service account
+6. Ve a la pestaña **"Tokens"**
+7. Click **"Add service account token"**
+8. Configurar:
+   - **Display name**: `devops-pipeline-token`
+   - **Expiration**: Dejar en **"No expiration"**
+9. Click **"Generate token"**
+10. **Copiar el token completo** (comienza con `glsa_`)
+    - ⚠️ Solo se muestra una vez - guárdalo INMEDIATAMENTE
+
+**Acceso directo por URL:**
+- Service Accounts: `https://TU-STACK.grafana.net/org/serviceaccounts`
 
 ### 5.5 Obtener Stack URL y Configurar Remote Write (Importante)
 1. En el menú principal, copiar la URL de tu stack
@@ -210,7 +225,7 @@ TF_API_TOKEN=XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX.atlasv1.XXXXXXXXXXXXXXXXXXXXXX
 ### ✅ Guardar:
 ```
 GRAFANA_URL=https://XXXXX.grafana.net
-GRAFANA_API_KEY=glsa_XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+GRAFANA_API_KEY=glsa_XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX_XXXXXXXX
 GRAFANA_PROMETHEUS_ENDPOINT=https://prometheus-XXX.grafana.net/api/prom/push
 GRAFANA_PROMETHEUS_USER=123456
 GRAFANA_PROMETHEUS_TOKEN=glc_XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
