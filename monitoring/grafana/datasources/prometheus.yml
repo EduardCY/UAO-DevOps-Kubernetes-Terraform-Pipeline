@@ -1,0 +1,31 @@
+# Grafana Datasource Configuration
+# Configure Prometheus as data source for Grafana
+
+apiVersion: 1
+
+datasources:
+  # Prometheus datasource
+  - name: Prometheus
+    type: prometheus
+    access: proxy
+    url: http://prometheus:9090
+    isDefault: true
+    editable: true
+    jsonData:
+      timeInterval: "15s"
+      queryTimeout: "60s"
+      httpMethod: "POST"
+
+  # Grafana Cloud Prometheus (if using)
+  - name: Grafana Cloud Prometheus
+    type: prometheus
+    access: proxy
+    url: https://prometheus-prod-01-eu-west-0.grafana.net/api/prom
+    basicAuth: true
+    basicAuthUser: ${GRAFANA_CLOUD_USERNAME}
+    secureJsonData:
+      basicAuthPassword: ${GRAFANA_CLOUD_PASSWORD}
+    editable: false
+    jsonData:
+      timeInterval: "15s"
+      httpMethod: "POST"

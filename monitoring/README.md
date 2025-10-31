@@ -1,19 +1,45 @@
-# Monitoring
+# Monitoring Configuration
 
-Configuración de monitoreo con Prometheus y Grafana Cloud.
+Sistema completo de monitoreo con Prometheus y Grafana para la aplicación CRUD.
 
-## Archivos
-- `prometheus.yml` - Configuración de Prometheus
-- `alerts.yml` - Alertas personalizadas
-- `dashboards/` - Dashboards de Grafana (JSON)
+## 📁 Estructura de Archivos
 
-## Métricas Disponibles
-- Request rate
-- Response time (p50, p95, p99)
-- Error rate
-- CPU/Memory usage
-- Database connections
+```
+monitoring/
+├── prometheus.yml              # Configuración de Prometheus
+├── alert_rules.yml            # Reglas de alertas
+├── docker-compose.yml         # Stack de monitoreo local
+├── grafana/
+│   ├── grafana.ini           # Configuración de Grafana
+│   ├── datasources/
+│   │   └── prometheus.yml    # Datasource Prometheus
+│   └── dashboards/
+│       ├── overview.json     # Dashboard general
+│       └── database.json     # Dashboard de base de datos
+└── README.md
+```
 
-## Acceso
-- Grafana Cloud: https://grafana.com
-- UptimeRobot: https://uptimerobot.com
+## 🚀 Inicio Rápido
+
+```bash
+cd monitoring
+docker-compose up -d
+```
+
+Servicios:
+- **Prometheus**: http://localhost:9090
+- **Grafana**: http://localhost:3001 (admin/admin)
+
+## 📊 Dashboards
+
+- **Overview**: Request rate, response time, errors, CPU/Memory
+- **Database**: Connections, queries, performance
+
+## 🔔 Alertas
+
+Critical: ServiceDown, DatabaseConnectionFailed
+Warning: HighErrorRate, SlowResponseTime, HighMemoryUsage
+
+## 🌐 Grafana Cloud
+
+Configurar remote_write en `prometheus.yml` con credenciales de Grafana Cloud.

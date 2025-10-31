@@ -1,0 +1,70 @@
+# Prometheus Configuration
+# Scrapes metrics from backend service and exports to Grafana Cloud
+
+global:
+  scrape_interval: 15s      # Scrape metrics every 15 seconds
+  evaluation_interval: 15s  # Evaluate rules every 15 seconds
+  external_labels:
+    cluster: 'crud-app-prod'
+    environment: 'production'
+
+# Alertmanager configuration
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+          # - alertmanager:9093  # Uncomment if using Alertmanager
+
+# Load rules once and periodically evaluate them
+rule_files:
+  - "alert_rules.yml"
+
+# Scrape configurations
+scrape_configs:
+  # Prometheus self-monitoring
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+        labels:
+          service: 'prometheus'
+
+  # Backend API metrics
+  - job_name: 'backend-api'
+    metrics_path: '/metrics'
+    scrape_interval: 15s
+    static_configs:
+      - targets:
+          - 'crud-backend:3000'              # Docker Compose
+          - 'crud-backend.onrender.com:443'  # Production (Render)
+        labels:
+          service: 'backend'
+          tier: 'api'
+    scheme: https  # Use HTTPS for production
+    tls_config:
+      insecure_skip_verify: false
+
+  # Node exporter (if installed)
+  - job_name: 'node-exporter'
+    static_configs:
+      - targets: ['node-exporter:9100']
+        labels:
+          service: 'node-exporter'
+
+  # PostgreSQL exporter (optional)
+  - job_name: 'postgres-exporter'
+    static_configs:
+      - targets: ['postgres-exporter:9187']
+        labels:
+          service: 'postgres'
+          database: 'railway'
+
+# Remote write to Grafana Cloud (configure with your credentials)
+remote_write:
+  - url: https://prometheus-prod-01-eu-west-0.grafana.net/api/prom/push
+    basic_auth:
+      username: <GRAFANA_PROMETHEUS_USERNAME>
+      password: <GRAFANA_PROMETHEUS_PASSWORD>
+    queue_config:
+      max_samples_per_send: 1000
+      max_shards: 200
+      capacity: 2500

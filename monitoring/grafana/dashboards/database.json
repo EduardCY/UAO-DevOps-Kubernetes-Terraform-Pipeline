@@ -1,0 +1,97 @@
+{
+  "dashboard": {
+    "title": "CRUD Application - Database Performance",
+    "tags": ["crud-app", "database", "postgresql"],
+    "timezone": "browser",
+    "schemaVersion": 27,
+    "version": 1,
+    "refresh": "30s",
+    "panels": [
+      {
+        "id": 1,
+        "title": "Query Duration (P95)",
+        "type": "graph",
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 0},
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.95, rate(db_query_duration_seconds_bucket[5m]))",
+            "legendFormat": "{{query_type}}",
+            "refId": "A"
+          }
+        ],
+        "yaxes": [
+          {"label": "Seconds", "show": true},
+          {"show": false}
+        ]
+      },
+      {
+        "id": 2,
+        "title": "Database Connections",
+        "type": "graph",
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 0},
+        "targets": [
+          {
+            "expr": "pg_stat_database_numbackends",
+            "legendFormat": "Active connections",
+            "refId": "A"
+          },
+          {
+            "expr": "pg_settings_max_connections",
+            "legendFormat": "Max connections",
+            "refId": "B"
+          }
+        ],
+        "yaxes": [
+          {"label": "Connections", "show": true},
+          {"show": false}
+        ]
+      },
+      {
+        "id": 3,
+        "title": "Queries per Second",
+        "type": "graph",
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 8},
+        "targets": [
+          {
+            "expr": "rate(db_queries_total[5m])",
+            "legendFormat": "{{operation}}",
+            "refId": "A"
+          }
+        ],
+        "yaxes": [
+          {"label": "Queries/sec", "show": true},
+          {"show": false}
+        ]
+      },
+      {
+        "id": 4,
+        "title": "Database Size",
+        "type": "stat",
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 8},
+        "targets": [
+          {
+            "expr": "pg_database_size_bytes / 1024 / 1024",
+            "refId": "A"
+          }
+        ],
+        "options": {
+          "unit": "MB",
+          "colorMode": "value"
+        }
+      },
+      {
+        "id": 5,
+        "title": "Slow Queries (>1s)",
+        "type": "table",
+        "gridPos": {"h": 8, "w": 24, "x": 0, "y": 16},
+        "targets": [
+          {
+            "expr": "topk(10, db_query_duration_seconds > 1)",
+            "format": "table",
+            "refId": "A"
+          }
+        ]
+      }
+    ]
+  }
+}
