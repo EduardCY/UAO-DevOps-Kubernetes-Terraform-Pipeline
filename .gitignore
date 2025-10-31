@@ -3,51 +3,69 @@ node_modules/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-
-# Environment variables
-.env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
+package-lock.json
+yarn.lock
 
 # Build outputs
 dist/
 build/
-*.tsbuildinfo
+*.js.map
 
-# IDE
+# Environment variables
+.env
+.env.local
+.env.*.local
+*.env
+
+# Testing
+coverage/
+.nyc_output/
+*.test.js
+*.spec.js
+
+# IDEs
 .vscode/
 .idea/
 *.swp
 *.swo
 *~
-
-# OS
 .DS_Store
-Thumbs.db
 
-# Terraform
-*.tfstate
-*.tfstate.*
-.terraform/
-.terraform.lock.hcl
-terraform.tfvars
-*.tfvars
-
-# Docker
+# Logs
+logs/
 *.log
 
-# Test coverage
-coverage/
-.nyc_output/
+# Docker
+docker-compose.override.yml
+.dockerignore
+
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+.terraform.lock.hcl
+terraform.tfplan
+
+# Kubernetes
+kubeconfig
+*.kubeconfig
+
+# OS
+Thumbs.db
+.DS_Store
 
 # Temporary files
 tmp/
 temp/
 *.tmp
 
-# Secrets
+# Monitoring
+grafana-data/
+prometheus-data/
+
+# Secrets (NO COMMITEAR)
 secrets/
 *.pem
 *.key
+credentials.json

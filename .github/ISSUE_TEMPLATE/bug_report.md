@@ -1,31 +1,40 @@
 ---
-name: Bug report
-about: Create a report to help us improve
+name: Bug Report
+about: Reportar un bug o problema
 title: '[BUG] '
 labels: bug
 assignees: ''
 ---
 
-## Bug Description
-A clear and concise description of what the bug is.
+## Descripción del Bug
+<!-- Una descripción clara y concisa del bug -->
 
-## To Reproduce
-Steps to reproduce the behavior:
-1. Go to '...'
-2. Click on '...'
-3. Scroll down to '...'
-4. See error
+## Pasos para Reproducir
+1. Ir a '...'
+2. Hacer clic en '...'
+3. Scroll hasta '...'
+4. Ver el error
 
-## Expected Behavior
-A clear and concise description of what you expected to happen.
+## Comportamiento Esperado
+<!-- Descripción clara de lo que esperabas que sucediera -->
+
+## Comportamiento Actual
+<!-- Descripción clara de lo que está sucediendo -->
 
 ## Screenshots
-If applicable, add screenshots to help explain your problem.
+<!-- Si aplica, agrega screenshots para ayudar a explicar el problema -->
 
-## Environment
-- OS: [e.g. Windows, macOS, Linux]
-- Browser [e.g. chrome, safari]
-- Version [e.g. 22]
+## Entorno
+- OS: [e.g. Windows 11, macOS, Linux]
+- Navegador: [e.g. Chrome 120, Firefox 121]
+- Versión de Node: [e.g. 18.17.0]
+- Versión del proyecto: [e.g. 1.0.0]
 
-## Additional Context
-Add any other context about the problem here.
+## Logs Adicionales
+<!-- Agrega logs o mensajes de error relevantes -->
+```
+Pegar logs aquí
+```
+
+## Contexto Adicional
+<!-- Cualquier otra información relevante sobre el problema -->

@@ -1,26 +1,34 @@
-## Description
-<!-- Describe your changes in detail -->
+# Pull Request
 
-## Type of Change
-- [ ] Bug fix
-- [ ] New feature
-- [ ] Breaking change
-- [ ] Documentation update
-- [ ] Infrastructure change
+## Descripción
+<!-- Describe los cambios que introduces en este PR -->
 
-## How Has This Been Tested?
-<!-- Describe the tests you ran to verify your changes -->
+## Tipo de cambio
+<!-- Marca con una 'x' el tipo de cambio que aplica -->
+- [ ] Bug fix (cambio que soluciona un issue)
+- [ ] Nueva característica (cambio que agrega funcionalidad)
+- [ ] Breaking change (cambio que causa que funcionalidad existente no funcione como se esperaba)
+- [ ] Refactorización (mejora de código sin cambio de funcionalidad)
+- [ ] Documentación
+- [ ] Configuración/DevOps
+
+## ¿Cómo se ha probado?
+<!-- Describe las pruebas que realizaste -->
+- [ ] Tests unitarios
+- [ ] Tests de integración
+- [ ] Pruebas manuales
 
 ## Checklist
-- [ ] My code follows the code style of this project
-- [ ] I have performed a self-review of my own code
-- [ ] I have commented my code, particularly in hard-to-understand areas
-- [ ] I have made corresponding changes to the documentation
-- [ ] My changes generate no new warnings
-- [ ] I have added tests that prove my fix is effective or that my feature works
-- [ ] New and existing unit tests pass locally with my changes
-- [ ] Any dependent changes have been merged and published
+- [ ] Mi código sigue el estilo de código de este proyecto
+- [ ] He realizado una auto-revisión de mi código
+- [ ] He comentado mi código en áreas difíciles de entender
+- [ ] Los tests existentes pasan correctamente
+- [ ] He agregado tests que prueban mi cambio
+- [ ] La build de CI/CD pasa correctamente
 
-## Related Issues
-<!-- Link any related issues here -->
+## Screenshots (si aplica)
+<!-- Agrega capturas de pantalla si hay cambios visuales -->
+
+## Issues relacionados
+<!-- Enlaza los issues que este PR resuelve -->
 Closes #
