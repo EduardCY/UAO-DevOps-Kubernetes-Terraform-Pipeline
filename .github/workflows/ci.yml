@@ -33,7 +33,19 @@ jobs:
           cache: 'npm'
           cache-dependency-path: backend/package-lock.json
       
+      - name: Cache node modules
+        uses: actions/cache@v4
+        id: cache-backend-deps
+        with:
+          path: |
+            backend/node_modules
+            ~/.npm
+          key: ${{ runner.os }}-backend-node-${{ hashFiles('backend/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-backend-node-
+      
       - name: Install dependencies
+        if: steps.cache-backend-deps.outputs.cache-hit != 'true'
         run: npm ci
       
       - name: Run linter
@@ -69,7 +81,19 @@ jobs:
           cache: 'npm'
           cache-dependency-path: frontend/package-lock.json
       
+      - name: Cache node modules
+        uses: actions/cache@v4
+        id: cache-frontend-deps
+        with:
+          path: |
+            frontend/node_modules
+            ~/.npm
+          key: ${{ runner.os }}-frontend-node-${{ hashFiles('frontend/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-frontend-node-
+      
       - name: Install dependencies
+        if: steps.cache-frontend-deps.outputs.cache-hit != 'true'
         run: npm ci
       
       - name: Run linter

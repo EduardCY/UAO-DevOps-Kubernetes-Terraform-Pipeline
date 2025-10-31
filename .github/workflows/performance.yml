@@ -1,0 +1,250 @@
+# Performance Testing and Optimization Pipeline
+# Tracks build times, implements caching, and runs performance benchmarks
+
+name: Performance Optimization
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  schedule:
+    # Run weekly on Sunday at 2:00 AM UTC
+    - cron: '0 2 * * 0'
+  workflow_dispatch:
+
+jobs:
+  # Track pipeline execution times
+  performance-tracking:
+    name: Performance Tracking
+    runs-on: ubuntu-latest
+    outputs:
+      start-time: ${{ steps.start.outputs.time }}
+    
+    steps:
+      - name: Record start time
+        id: start
+        run: |
+          echo "time=$(date +%s)" >> $GITHUB_OUTPUT
+          echo "🕐 Pipeline started at: $(date)"
+
+  # Parallel job: Backend build and test with caching
+  backend-build:
+    name: Backend Build (Optimized)
+    runs-on: ubuntu-latest
+    needs: performance-tracking
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: backend/package-lock.json
+      
+      - name: Cache node modules
+        uses: actions/cache@v4
+        id: cache-backend
+        with:
+          path: |
+            backend/node_modules
+            ~/.npm
+          key: ${{ runner.os }}-backend-${{ hashFiles('backend/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-backend-
+      
+      - name: Install dependencies
+        if: steps.cache-backend.outputs.cache-hit != 'true'
+        working-directory: backend
+        run: npm ci
+      
+      - name: Run linting
+        working-directory: backend
+        run: npm run lint
+      
+      - name: Run tests
+        working-directory: backend
+        run: npm test
+      
+      - name: Build application
+        working-directory: backend
+        run: echo "Backend built successfully"
+
+  # Parallel job: Frontend build and test with caching
+  frontend-build:
+    name: Frontend Build (Optimized)
+    runs-on: ubuntu-latest
+    needs: performance-tracking
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+      
+      - name: Cache node modules
+        uses: actions/cache@v4
+        id: cache-frontend
+        with:
+          path: |
+            frontend/node_modules
+            ~/.npm
+          key: ${{ runner.os }}-frontend-${{ hashFiles('frontend/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-frontend-
+      
+      - name: Install dependencies
+        if: steps.cache-frontend.outputs.cache-hit != 'true'
+        working-directory: frontend
+        run: npm ci
+      
+      - name: Run linting
+        working-directory: frontend
+        run: npm run lint
+      
+      - name: Run tests
+        working-directory: frontend
+        run: npm test
+      
+      - name: Build application
+        working-directory: frontend
+        run: npm run build
+      
+      - name: Cache build artifacts
+        uses: actions/cache@v4
+        with:
+          path: frontend/build
+          key: ${{ runner.os }}-frontend-build-${{ github.sha }}
+
+  # Docker build with layer caching
+  docker-build-optimized:
+    name: Optimized Docker Builds
+    runs-on: ubuntu-latest
+    needs: [backend-build, frontend-build]
+    
+    strategy:
+      matrix:
+        service: [backend, frontend]
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      
+      - name: Cache Docker layers
+        uses: actions/cache@v4
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ matrix.service }}-${{ hashFiles(format('{0}/Dockerfile', matrix.service)) }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-${{ matrix.service }}-
+      
+      - name: Build Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./${{ matrix.service }}
+          push: false
+          tags: ${{ matrix.service }}:${{ github.sha }}
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
+      
+      - name: Move cache
+        run: |
+          rm -rf /tmp/.buildx-cache
+          mv /tmp/.buildx-cache-new /tmp/.buildx-cache
+
+  # Performance benchmarking
+  performance-benchmark:
+    name: Performance Benchmark
+    runs-on: ubuntu-latest
+    needs: [backend-build, frontend-build]
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+      
+      - name: Restore backend cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            backend/node_modules
+            ~/.npm
+          key: ${{ runner.os }}-backend-${{ hashFiles('backend/package-lock.json') }}
+      
+      - name: Restore frontend cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            frontend/node_modules
+            ~/.npm
+          key: ${{ runner.os }}-frontend-${{ hashFiles('frontend/package-lock.json') }}
+      
+      - name: Make benchmark script executable
+        run: chmod +x performance/benchmark.sh
+      
+      - name: Run performance benchmark
+        run: bash performance/benchmark.sh
+      
+      - name: Upload benchmark results
+        uses: actions/upload-artifact@v4
+        with:
+          name: performance-benchmarks
+          path: performance/benchmarks/*.json
+          retention-days: 30
+
+  # Calculate and report total pipeline time
+  performance-summary:
+    name: Performance Summary
+    runs-on: ubuntu-latest
+    needs: [performance-tracking, backend-build, frontend-build, docker-build-optimized]
+    if: always()
+    
+    steps:
+      - name: Calculate pipeline duration
+        run: |
+          START_TIME="${{ needs.performance-tracking.outputs.start-time }}"
+          END_TIME=$(date +%s)
+          DURATION=$((END_TIME - START_TIME))
+          MINUTES=$((DURATION / 60))
+          SECONDS=$((DURATION % 60))
+          
+          echo "## ⏱️ Performance Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Total Pipeline Duration:** ${MINUTES}m ${SECONDS}s" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Job Status" >> $GITHUB_STEP_SUMMARY
+          echo "- Backend Build: ${{ needs.backend-build.result }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Frontend Build: ${{ needs.frontend-build.result }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Docker Builds: ${{ needs.docker-build-optimized.result }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          if [ $DURATION -lt 300 ]; then
+            echo "✅ **Excellent performance** (<5 minutes)" >> $GITHUB_STEP_SUMMARY
+          elif [ $DURATION -lt 600 ]; then
+            echo "✅ **Good performance** (5-10 minutes)" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "⚠️ **Consider optimization** (>10 minutes)" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Optimization Tips" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Caching enabled for dependencies" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Parallel job execution" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Docker layer caching" >> $GITHUB_STEP_SUMMARY
+          echo "- 💡 Monitor cache hit rates" >> $GITHUB_STEP_SUMMARY

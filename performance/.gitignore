@@ -1,0 +1,13 @@
+# Performance benchmarks
+*.json
+*.txt
+*.csv
+*.tsv
+
+# Keep README and scripts
+!README.md
+!*.sh
+
+# Benchmark reports directory
+benchmarks/
+reports/
