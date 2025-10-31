@@ -1,0 +1,19 @@
+# Kubernetes Service for Backend API
+# Exposes backend pods within the cluster
+apiVersion: v1
+kind: Service
+metadata:
+  name: crud-backend
+  labels:
+    app: crud-backend
+    tier: backend
+spec:
+  type: ClusterIP  # Internal service, not exposed outside cluster
+  selector:
+    app: crud-backend
+  ports:
+  - port: 3000        # Service port
+    targetPort: 3000  # Container port
+    protocol: TCP
+    name: http
+  sessionAffinity: None

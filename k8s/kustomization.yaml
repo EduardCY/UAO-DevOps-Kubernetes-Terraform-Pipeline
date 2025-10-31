@@ -1,0 +1,31 @@
+# Kustomize configuration for managing Kubernetes manifests
+# Allows easy customization for different environments
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+# Namespace for all resources
+namespace: crud-app
+
+# Common labels applied to all resources
+commonLabels:
+  app.kubernetes.io/name: crud-app
+  app.kubernetes.io/managed-by: kustomize
+
+# Resources to include
+resources:
+  - namespace.yaml
+  - configmap.yaml
+  # - secret.yaml  # Uncomment after creating from secret.yaml.example
+  - backend-deployment.yaml
+  - backend-service.yaml
+  - frontend-deployment.yaml
+  - frontend-service.yaml
+  - ingress.yaml
+  - hpa.yaml
+
+# Images to update (useful for CI/CD)
+images:
+  - name: ghcr.io/leonardpeace/final_devops_proyecto/backend
+    newTag: latest
+  - name: ghcr.io/leonardpeace/final_devops_proyecto/frontend
+    newTag: latest

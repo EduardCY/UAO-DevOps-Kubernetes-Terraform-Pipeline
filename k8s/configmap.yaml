@@ -1,0 +1,24 @@
+# ConfigMap for application configuration
+# Non-sensitive configuration data used by backend and frontend
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-config
+  labels:
+    app: crud-app
+data:
+  # Backend configuration
+  NODE_ENV: "production"
+  CORS_ORIGIN: "https://crud-app.example.com"
+  
+  # Frontend configuration
+  API_URL: "http://crud-backend:3000"
+  
+  # Database configuration (non-sensitive)
+  DB_POOL_MIN: "2"
+  DB_POOL_MAX: "10"
+  DB_IDLE_TIMEOUT: "10000"
+  
+  # Logging configuration
+  LOG_LEVEL: "info"
+  LOG_FORMAT: "json"

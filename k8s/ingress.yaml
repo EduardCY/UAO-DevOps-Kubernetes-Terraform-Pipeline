@@ -1,0 +1,86 @@
+# Ingress configuration for HTTP routing
+# Routes external traffic to frontend and backend services
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: crud-ingress
+  labels:
+    app: crud-app
+  annotations:
+    # Nginx ingress controller annotations
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    
+    # CORS configuration
+    nginx.ingress.kubernetes.io/enable-cors: "true"
+    nginx.ingress.kubernetes.io/cors-allow-methods: "GET, POST, PUT, DELETE, OPTIONS"
+    nginx.ingress.kubernetes.io/cors-allow-origin: "*"
+    
+    # Rate limiting
+    nginx.ingress.kubernetes.io/limit-rps: "100"
+    
+    # Timeouts
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: "60"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "60"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "60"
+    
+    # SSL/TLS with cert-manager (optional)
+    # cert-manager.io/cluster-issuer: "letsencrypt-prod"
+spec:
+  ingressClassName: nginx
+  
+  # TLS configuration (uncomment when using cert-manager)
+  # tls:
+  # - hosts:
+  #   - crud-app.example.com
+  #   secretName: crud-tls-secret
+  
+  rules:
+  # Main domain - routes to frontend
+  - host: crud-app.example.com
+    http:
+      paths:
+      # Frontend routes
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: crud-frontend
+            port:
+              number: 80
+      
+      # API routes - backend
+      - path: /api
+        pathType: Prefix
+        backend:
+          service:
+            name: crud-backend
+            port:
+              number: 3000
+      
+      # Health check endpoints
+      - path: /healthz
+        pathType: Exact
+        backend:
+          service:
+            name: crud-backend
+            port:
+              number: 3000
+      
+      - path: /readiness
+        pathType: Exact
+        backend:
+          service:
+            name: crud-backend
+            port:
+              number: 3000
+      
+      # Metrics endpoint (protected in production)
+      - path: /metrics
+        pathType: Exact
+        backend:
+          service:
+            name: crud-backend
+            port:
+              number: 3000

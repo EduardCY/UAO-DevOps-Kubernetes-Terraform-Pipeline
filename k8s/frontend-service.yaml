@@ -1,0 +1,19 @@
+# Kubernetes Service for Frontend React App
+# Exposes frontend pods within the cluster
+apiVersion: v1
+kind: Service
+metadata:
+  name: crud-frontend
+  labels:
+    app: crud-frontend
+    tier: frontend
+spec:
+  type: ClusterIP  # Internal service, exposed via Ingress
+  selector:
+    app: crud-frontend
+  ports:
+  - port: 80          # Service port
+    targetPort: 80    # Container port (nginx)
+    protocol: TCP
+    name: http
+  sessionAffinity: None
