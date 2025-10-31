@@ -1,14 +1,48 @@
 # OWASP ZAP Rules Configuration
 # Customize security scanning rules for the application
 
-# Format: rule_id  IGNORE|WARN|FAIL  URL_pattern
-# Example: 10021  IGNORE  https://example.com/api/
+# Format: rule_id	threshold	[name]
+# Thresholds: IGNORE, INFO, WARN, FAIL
 
-# Ignore cookie warnings for development
-10054	WARN	.*
+# Ignore low priority rules
+10010	IGNORE	Cookie No HttpOnly Flag
+10011	IGNORE	Cookie Without Secure Flag
 
-# CSP Header - Warning only
-10038	WARN	.*
+# Warning level for medium priority
+10015	WARN	Re-examine Cache-control Directives
+10017	WARN	Cross-Domain JavaScript Source File Inclusion
+10021	WARN	X-Content-Type-Options Header Missing
+10023	WARN	Information Disclosure - Debug Error Messages
+10027	WARN	Information Disclosure - Suspicious Comments
+10035	WARN	Strict-Transport-Security Header Not Set
+10036	WARN	HTTP Server Response Header
+10038	WARN	Content Security Policy (CSP) Header Not Set
+10040	WARN	Secure Pages Include Mixed Content
+10054	WARN	Cookie Without SameSite Attribute
+10055	WARN	CSP: Wildcard Directive
 
-# X-Content-Type-Options - Warning only
-10021	WARN	.*
+# Fail build for high priority security issues
+10020	FAIL	X-Frame-Options Header Not Set
+10026	FAIL	HTTP Parameter Override
+10044	FAIL	Big Redirect Detected
+10045	FAIL	Source Code Disclosure
+10047	FAIL	HTTPS Content Available via HTTP
+10048	FAIL	Remote Code Execution
+10049	FAIL	SQL Injection
+10051	FAIL	XSS Protection
+10056	FAIL	X-Debug-Token Information Leak
+
+# Critical vulnerabilities - always fail
+40012	FAIL	Cross Site Scripting (Reflected)
+40013	FAIL	Session Fixation
+40014	FAIL	Cross Site Scripting (Persistent)
+40018	FAIL	SQL Injection
+40019	FAIL	SQL Injection - MySQL
+40021	FAIL	SQL Injection - Oracle
+40022	FAIL	SQL Injection - PostgreSQL
+40024	FAIL	SQL Injection - SQLite
+40026	FAIL	Cross Site Scripting (DOM Based)
+40027	FAIL	SQL Injection - MsSQL
+90001	FAIL	Insecure JSF ViewState
+90022	FAIL	Application Error Disclosure
+

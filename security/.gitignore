@@ -1,0 +1,10 @@
+# Security scan reports and artifacts
+*.json
+*.sarif
+*.html
+
+# Keep README
+!README.md
+
+# Scripts are tracked
+!*.sh

@@ -1,0 +1,50 @@
+#!/bin/bash
+
+# Pre-commit hook for security checks
+# Install: cp scripts/pre-commit.sample .git/hooks/pre-commit && chmod +x .git/hooks/pre-commit
+
+echo "🔒 Running security checks before commit..."
+
+# Check for hard-coded secrets
+if [ -f "security/check-secrets.sh" ]; then
+  echo "Checking for hard-coded secrets..."
+  bash security/check-secrets.sh
+  
+  if [ $? -ne 0 ]; then
+    echo "❌ Pre-commit failed: Hard-coded secrets detected"
+    echo "Please remove sensitive data and use environment variables"
+    exit 1
+  fi
+fi
+
+# Check for .env files being committed
+if git diff --cached --name-only | grep -q "^\.env$"; then
+  echo "❌ Pre-commit failed: Attempting to commit .env file"
+  echo "Please remove .env from staging: git reset HEAD .env"
+  exit 1
+fi
+
+# Check for common secret patterns in staged files
+STAGED_FILES=$(git diff --cached --name-only --diff-filter=ACM | grep -E '\.(js|jsx|ts|tsx|json|yml|yaml)$')
+
+if [ ! -z "$STAGED_FILES" ]; then
+  echo "Scanning staged files for secrets..."
+  
+  for file in $STAGED_FILES; do
+    # Check for common secret patterns
+    if grep -qiE '(password|secret|api[_-]?key|private[_-]?key|token).*[=:].*["\x27][^"\x27]+["\x27]' "$file"; then
+      echo "⚠️  Warning: Possible secret found in $file"
+      echo "Please review and ensure no sensitive data is being committed"
+      
+      # Ask for confirmation
+      read -p "Continue with commit? (y/n) " -n 1 -r
+      echo
+      if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+        exit 1
+      fi
+    fi
+  done
+fi
+
+echo "✅ Pre-commit security checks passed"
+exit 0
