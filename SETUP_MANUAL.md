@@ -159,79 +159,31 @@ TF_API_TOKEN=XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX.atlasv1.XXXXXXXXXXXXXXXXXXXXXX
 4. **Create stack**
 5. Esperar a que se provisione (1-2 minutos)
 
-### 5.3 Configurar Prometheus Data Source (OPCIONAL)
-⚠️ **NOTA**: Grafana Cloud ya incluye Prometheus integrado. Solo necesitas esto si quieres conectar un Prometheus externo.
+### 5.3 Configurar Prometheus Data Source
+1. En tu stack, ve a **Connections**
+2. Click **Add new connection**
+3. Buscar y seleccionar **Prometheus**
+4. Click **Add new data source**
+5. Dejar configuración por defecto
+6. **Save & Test**
 
-**Para usar el Prometheus incluido en Grafana Cloud:**
-1. En tu stack, ve a **Home → Connections → Data sources**
-2. Verás **Prometheus (default)** ya configurado
-3. Click en él para ver la configuración
-4. La URL será automática: `https://prometheus-XXX.grafana.net`
-5. **Ya está listo para usar** ✅
+### 5.4 Generar API Key
+1. En el menú izquierdo: **Administration → API Keys**
+2. Click **Add API key**
+3. Key name: `devops-pipeline-key`
+4. Role: **Editor**
+5. **Add**
+6. **Copiar el API key** (solo se muestra una vez)
 
-**Si necesitas crear uno nuevo:**
-1. Click **Add new data source**
-2. Seleccionar **Prometheus**
-3. Name: `Prometheus-Render` (si vas a conectar tu app)
-4. URL: Dejar vacío por ahora (se configurará con el endpoint de tu app después)
-5. **Save & Test** (fallará hasta que despliegues la app)
-
-### 5.4 Generar API Key (Service Account Token)
-
-**Grafana Cloud usa Service Accounts para autenticación API**
-
-1. En el menú izquierdo: **Administration → Service accounts**
-2. Click **"Add service account"** (botón arriba a la derecha)
-3. Configurar:
-   - **Display name**: `devops-pipeline-sa`
-   - **Role**: **Editor**
-4. Click **"Create"**
-5. Serás redirigido a la página del service account
-6. Ve a la pestaña **"Tokens"**
-7. Click **"Add service account token"**
-8. Configurar:
-   - **Display name**: `devops-pipeline-token`
-   - **Expiration**: Dejar en **"No expiration"**
-9. Click **"Generate token"**
-10. **Copiar el token completo** (comienza con `glsa_`)
-    - ⚠️ Solo se muestra una vez - guárdalo INMEDIATAMENTE
-
-**Acceso directo por URL:**
-- Service Accounts: `https://TU-STACK.grafana.net/org/serviceaccounts`
-
-### 5.5 Obtener Stack URL y Configurar Remote Write (Importante)
+### 5.5 Obtener Stack URL
 1. En el menú principal, copiar la URL de tu stack
 2. Formato: `https://XXXXX.grafana.net`
-
-**Para enviar métricas desde tu app:**
-1. Ve a **Home → Connections → Add new connection**
-2. Busca **Prometheus** y selecciona **Via Prometheus remote_write**
-3. Copia los valores:
-   - **Remote Write Endpoint**: `https://prometheus-XXX.grafana.net/api/prom/push`
-   - **Username / Instance ID**: Tu user ID (número)
-   - **Password**: Necesitarás generar un token
-
-4. Para generar el token:
-   - Ve a **Administration → Access Policies**
-   - Click **Create access policy**
-   - Name: `prometheus-push`
-   - Scopes: ✅ `metrics:write`, ✅ `metrics:read`
-   - **Create**
-   - Luego **Add token**
-   - Name: `app-metrics-token`
-   - **Generate token**
-   - **Copiar el token** (solo se muestra una vez)
 
 ### ✅ Guardar:
 ```
 GRAFANA_URL=https://XXXXX.grafana.net
-GRAFANA_API_KEY=glsa_XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX_XXXXXXXX
-GRAFANA_PROMETHEUS_ENDPOINT=https://prometheus-XXX.grafana.net/api/prom/push
-GRAFANA_PROMETHEUS_USER=123456
-GRAFANA_PROMETHEUS_TOKEN=glc_XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+GRAFANA_API_KEY=glsa_XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 ```
-
-**Nota**: Por ahora solo necesitas GRAFANA_URL y GRAFANA_API_KEY para la Fase 3. Las credenciales de Prometheus se configurarán en la Fase 7 (Monitoring).
 
 ---
 
